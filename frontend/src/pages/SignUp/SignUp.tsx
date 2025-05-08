@@ -1,5 +1,5 @@
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import {
   Box,
@@ -18,24 +18,30 @@ import { PublicRoutes } from "../../routes/constants";
 
 const SignUp = () => {
   const theme = useTheme();
-
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword((show) => !show);
 
   const dispatch = useAppDispatch();
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (password === confirmPassword) {
-      dispatch(createUserThunk({ email, password }));
+      const result = await dispatch(createUserThunk({ email, password }));
+      if (result.meta.requestStatus === "fulfilled") {
+        navigate("/attempts");
+      }
     } else {
       toast.error("Passwords don't match!");
     }
   };
+
   return (
     <Box
       display={"flex"}
